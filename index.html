@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Internal Control Framework Exam</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&amp;family=IBM+Plex+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+  <style>
+html,body{margin:0;padding:0;height:100%;font-family:'IBM Plex Sans',sans-serif}
+.font-heading{font-family:'DM Serif Display',serif}
+.exam-bg{background:#0f172a;background-image:radial-gradient(ellipse at 20% 50%,#1e3a5f 0%,transparent 50%),radial-gradient(ellipse at 80% 20%,#2d1b4e 0%,transparent 50%)}
+.card-glass{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);backdrop-filter:blur(12px)}
+.option-btn{transition:all .2s}
+.option-btn:hover{background:rgba(255,255,255,0.08)}
+.option-btn.selected{background:rgba(99,182,255,0.15);border-color:#63b6ff}
+.option-btn.correct{background:rgba(74,222,128,0.15);border-color:#4ade80}
+.option-btn.wrong{background:rgba(248,113,113,0.15);border-color:#f87171}
+.progress-fill{transition:width .4s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.fade-in{animation:fadeIn .4s ease forwards}
+@keyframes pulse-glow{0%,100%{box-shadow:0 0 20px rgba(99,182,255,0.2)}50%{box-shadow:0 0 40px rgba(99,182,255,0.4)}}
+.glow{animation:pulse-glow 2s infinite}
+</style>
+  <style>body { box-sizing: border-box; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full">
+  <div id="app" class="exam-bg h-full w-full overflow-auto text-white"><!-- NAME ENTRY -->
+   <div id="nameScreen" class="flex items-center justify-center min-h-full px-4 py-12">
+    <div class="card-glass rounded-2xl p-8 md:p-12 max-w-lg w-full text-center fade-in">
+     <div class="text-5xl mb-6">
+      🏗️
+     </div>
+     <h1 id="mainTitle" class="font-heading text-3xl md:text-4xl text-white mb-3">MIDTERM EXAMINATION IN AIS</h1>
+     <p class="text-slate-400 mb-8 text-sm">40 multiple-choice questions • COSO, IT Controls, Risk &amp; Fraud</p>
+     <form id="nameForm" class="space-y-5">
+      <div class="text-left"><label for="studentName" class="text-slate-300 text-sm font-medium mb-1 block">Your Full Name</label> <input id="studentName" type="text" required placeholder="Enter your name to begin" class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-400">
+      </div><button type="submit" id="startBtn" class="w-full py-3 rounded-xl bg-sky-500 hover:bg-sky-400 text-white font-semibold transition-all flex items-center justify-center gap-2"> <span>Start Examination</span> <i data-lucide="arrow-right" style="width:18px;height:18px"></i> </button>
+     </form>
+    </div>
+   </div><!-- QUIZ SCREEN -->
+   <div id="quizScreen" class="hidden min-h-full px-4 py-8 max-w-3xl mx-auto">
+    <div class="flex items-center justify-between mb-6">
+     <p id="studentLabel" class="text-slate-400 text-sm"></p>
+     <p id="qCounter" class="text-slate-400 text-sm font-medium"></p>
+    </div>
+    <div class="w-full h-2 rounded-full bg-white/10 mb-8">
+     <div id="progressBar" class="h-full rounded-full bg-gradient-to-r from-sky-500 to-violet-500 progress-fill" style="width:0%"></div>
+    </div>
+    <div id="questionCard" class="card-glass rounded-2xl p-6 md:p-8 fade-in">
+     <p id="qNumber" class="text-sky-400 text-xs font-semibold uppercase tracking-widest mb-2"></p>
+     <h2 id="qText" class="font-heading text-xl md:text-2xl text-white mb-6"></h2>
+     <div id="optionsContainer" class="space-y-3"></div>
+     <div id="feedback" class="hidden mt-5 p-4 rounded-xl text-sm"></div><button id="nextBtn" class="hidden mt-6 w-full py-3 rounded-xl bg-sky-500 hover:bg-sky-400 text-white font-semibold transition-all">Next Question</button>
+    </div>
+   </div><!-- RESULTS -->
+   <div id="resultsScreen" class="hidden flex items-center justify-center min-h-full px-4 py-12">
+    <div class="card-glass rounded-2xl p-8 md:p-12 max-w-lg w-full text-center fade-in">
+     <div id="resultIcon" class="text-6xl mb-4"></div>
+     <h2 id="resultTitle" class="font-heading text-3xl text-white mb-2"></h2>
+     <p id="resultName" class="text-slate-400 mb-6"></p>
+     <div id="scoreCircle" class="glow mx-auto w-36 h-36 rounded-full border-4 border-sky-400 flex flex-col items-center justify-center mb-6"><span id="scoreNum" class="text-4xl font-bold text-sky-300"></span> <span class="text-slate-400 text-xs">out of 40</span>
+     </div>
+     <p id="scorePct" class="text-slate-300 text-lg font-medium mb-2"></p>
+     <p id="scoreMsg" class="text-slate-400 text-sm mb-8"></p><button id="retryBtn" class="w-full py-3 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 text-white font-semibold transition-all">Retake Exam</button>
+    </div>
+   </div>
+  </div>
+  <script>
+const questions=[
+{q:"Which framework is considered the gold standard for internal control design?",opts:["COBIT","COSO","ISO 27001","ITIL"],ans:1},
+{q:"How many components does the COSO framework have?",opts:["3","4","5","6"],ans:2},
+{q:"Which COSO component sets the 'tone at the top'?",opts:["Risk Assessment","Control Activities","Control Environment","Monitoring"],ans:2},
+{q:"Segregation of duties is an example of which COSO component?",opts:["Control Environment","Risk Assessment","Control Activities","Information & Communication"],ans:2},
+{q:"Which COSO component involves identifying threats that could prevent achieving objectives?",opts:["Control Environment","Risk Assessment","Control Activities","Monitoring Activities"],ans:1},
+{q:"Ongoing evaluations to confirm controls are functioning fall under which COSO component?",opts:["Control Activities","Information & Communication","Monitoring Activities","Risk Assessment"],ans:2},
+{q:"The fraud triangle was developed by:",opts:["Donald Cressey","Joseph Wells","Robert Kaplan","Michael Porter"],ans:0},
+{q:"Which is NOT a leg of the fraud triangle?",opts:["Pressure","Opportunity","Rationalization","Capability"],ans:3},
+{q:"Ghost employees are an example of which fraud type?",opts:["Financial statement fraud","Asset misappropriation","Corruption","Data breach"],ans:1},
+{q:"Revenue overstatement is classified as:",opts:["Asset misappropriation","Financial statement fraud","Corruption","Embezzlement"],ans:1},
+{q:"Which risk treatment strategy involves purchasing insurance?",opts:["Avoid","Transfer","Mitigate","Accept"],ans:1},
+{q:"In a risk matrix, what combination represents the highest priority?",opts:["Low likelihood, High impact","High likelihood, Low impact","High likelihood, High impact","Low likelihood, Low impact"],ans:2},
+{q:"User authentication and password policies fall under which IT control category?",opts:["Change Management","Application Controls","Access Controls","Operations Controls"],ans:2},
+{q:"IT General Controls (ITGCs) apply to:",opts:["Only financial applications","Only payroll systems","All applications and IT infrastructure","Only cloud systems"],ans:2},
+{q:"Data validation and format checks are examples of:",opts:["Output controls","Processing controls","Input controls","General controls"],ans:2},
+{q:"Batch totals and run-to-run totals are examples of:",opts:["Input controls","Processing controls","Output controls","Access controls"],ans:1},
+{q:"The principle that users should get the minimum access needed for their role is called:",opts:["Segregation of duties","Defense in depth","Least privilege","Need to know"],ans:2},
+{q:"Multiple layers of security controls is known as:",opts:["Least privilege","Segregation of duties","Defense in depth","Zero trust"],ans:2},
+{q:"Which control ensures no single person controls all aspects of a transaction?",opts:["Least privilege","Segregation of duties","Defense in depth","Dual control"],ans:1},
+{q:"Backup procedures and disaster recovery fall under which ITGC category?",opts:["Access Controls","Change Management","Operations Controls","Physical Security"],ans:2},
+{q:"Which step in risk assessment comes immediately after identifying risks?",opts:["Treat risks","Evaluate risks","Analyze risks","Monitor risks"],ans:2},
+{q:"Concealed liabilities are an example of:",opts:["Asset misappropriation","Financial statement fraud","Operational fraud","IT fraud"],ans:1},
+{q:"Transaction logging and user activity tracking are examples of:",opts:["Input controls","Processing controls","Audit trails","General controls"],ans:2},
+{q:"Report distribution and reconciliation are examples of:",opts:["Input controls","Processing controls","Output controls","Access controls"],ans:2},
+{q:"System updates, testing procedures, and approval workflows relate to:",opts:["Access controls","Change management","Operations controls","Application controls"],ans:1},
+{q:"In the fraud triangle, financial need or incentive represents:",opts:["Opportunity","Rationalization","Pressure","Capability"],ans:2},
+{q:"Which prevention strategy involves separating authorization, custody, and recording?",opts:["Access controls","Regular reconciliations","Segregation of duties","Ethics training"],ans:2},
+{q:"Independent verification of records against physical assets describes:",opts:["Segregation of duties","Regular reconciliations","Audit trails","Access controls"],ans:1},
+{q:"Expense reimbursement fraud falls under which category?",opts:["Financial statement fraud","Asset misappropriation","Corruption","Cyber fraud"],ans:1},
+{q:"Which COSO component ensures relevant information is captured and communicated timely?",opts:["Control Environment","Risk Assessment","Control Activities","Information & Communication"],ans:3},
+{q:"Vulnerability analysis is part of which risk assessment step?",opts:["Identify risks","Analyze risks","Evaluate risks","Treat risks"],ans:1},
+{q:"Cost-benefit analysis of controls occurs during which risk assessment step?",opts:["Identify risks","Analyze risks","Evaluate risks","Treat risks"],ans:2},
+{q:"Data center access and environmental controls are classified as:",opts:["Access controls","Operations controls","Physical security","Application controls"],ans:2},
+{q:"Fostering an ethical culture to prevent fraud is an example of:",opts:["Control activities","Ethics & training programs","Monitoring activities","Risk assessment"],ans:1},
+{q:"Skimming cash receipts is an example of:",opts:["Financial statement fraud","Asset misappropriation","Bribery","Data manipulation"],ans:1},
+{q:"Improper asset valuation is classified as:",opts:["Asset misappropriation","Financial statement fraud","Embezzlement","Operational fraud"],ans:1},
+{q:"Which fraud triangle element refers to weak controls allowing fraud?",opts:["Pressure","Rationalization","Opportunity","Motivation"],ans:2},
+{q:"Residual risk acceptance occurs during which step?",opts:["Identify risks","Analyze risks","Evaluate risks","Treat risks"],ans:2},
+{q:"Which risk treatment involves eliminating the activity that causes the risk?",opts:["Transfer","Accept","Mitigate","Avoid"],ans:3},
+{q:"Integrity, ethical values, and competence of personnel relate to which COSO component?",opts:["Monitoring Activities","Control Environment","Risk Assessment","Control Activities"],ans:1}
+];
+
+let currentQ=0,score=0,answered=false,studentName="",shuffled=[];
+
+const defaultConfig={
+  exam_title:"Internal Control Framework",
+  passing_score_label:"Congratulations!",
+  background_color:"#0f172a",
+  surface_color:"#63b6ff",
+  text_color:"#f1f5f9",
+  primary_action_color:"#0ea5e9",
+  secondary_action_color:"#8b5cf6",
+  font_family:"DM Serif Display",
+  font_size:16
+};
+
+function shuffle(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}
+  return a;
+}
+
+function showScreen(id){
+  ['nameScreen','quizScreen','resultsScreen'].forEach(s=>{
+    document.getElementById(s).classList.toggle('hidden',s!==id);
+  });
+}
+
+function renderQuestion(){
+  answered=false;
+  const item=shuffled[currentQ];
+  document.getElementById('qCounter').textContent=`${currentQ+1} / 40`;
+  document.getElementById('progressBar').style.width=`${((currentQ)/40)*100}%`;
+  document.getElementById('qNumber').textContent=`Question ${currentQ+1}`;
+  document.getElementById('qText').textContent=item.q;
+  document.getElementById('feedback').classList.add('hidden');
+  document.getElementById('nextBtn').classList.add('hidden');
+  const cont=document.getElementById('optionsContainer');
+  cont.innerHTML='';
+  const letters=['A','B','C','D'];
+  item.opts.forEach((opt,i)=>{
+    const btn=document.createElement('button');
+    btn.className='option-btn w-full text-left px-4 py-3 rounded-xl border border-white/10 flex items-center gap-3';
+    btn.innerHTML=`<span class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-sm font-semibold shrink-0">${letters[i]}</span><span>${opt}</span>`;
+    btn.onclick=()=>selectAnswer(i);
+    cont.appendChild(btn);
+  });
+  // re-trigger fade
+  const card=document.getElementById('questionCard');
+  card.classList.remove('fade-in');
+  void card.offsetWidth;
+  card.classList.add('fade-in');
+}
+
+function selectAnswer(idx){
+  if(answered)return;
+  answered=true;
+  const item=shuffled[currentQ];
+  const btns=document.getElementById('optionsContainer').children;
+  for(let i=0;i<btns.length;i++){
+    btns[i].disabled=true;
+    if(i===item.ans)btns[i].classList.add('correct');
+    if(i===idx&&idx!==item.ans)btns[i].classList.add('wrong');
+  }
+  if(idx===item.ans)score++;
+  const fb=document.getElementById('feedback');
+  fb.classList.remove('hidden');
+  if(idx===item.ans){
+    fb.className='mt-5 p-4 rounded-xl text-sm bg-emerald-500/10 border border-emerald-500/30 text-emerald-300';
+    fb.textContent='✓ Correct!';
+  }else{
+    fb.className='mt-5 p-4 rounded-xl text-sm bg-red-500/10 border border-red-500/30 text-red-300';
+    fb.textContent=`✗ Incorrect. The correct answer is: ${item.opts[item.ans]}`;
+  }
+  document.getElementById('nextBtn').classList.remove('hidden');
+}
+
+function showResults(){
+  showScreen('resultsScreen');
+  const pct=Math.round((score/40)*100);
+  const pass=pct>=75;
+  const cfg=window.elementSdk?.config||defaultConfig;
+  document.getElementById('resultIcon').textContent=pass?'🎉':'📚';
+  document.getElementById('resultTitle').textContent=pass?(cfg.passing_score_label||defaultConfig.passing_score_label):'Keep Studying!';
+  document.getElementById('resultName').textContent=studentName;
+  document.getElementById('scoreNum').textContent=score;
+  document.getElementById('scorePct').textContent=`${pct}%`;
+  document.getElementById('scoreMsg').textContent=pass?'You passed the examination! Excellent understanding of internal controls.':'You need 75% to pass. Review the material and try again.';
+  document.getElementById('scoreCircle').style.borderColor=pass?'#4ade80':'#f87171';
+}
+
+document.getElementById('nameForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  studentName=document.getElementById('studentName').value.trim();
+  if(!studentName)return;
+  score=0;currentQ=0;
+  shuffled=shuffle(questions);
+  document.getElementById('studentLabel').textContent=studentName;
+  showScreen('quizScreen');
+  renderQuestion();
+});
+
+document.getElementById('nextBtn').addEventListener('click',()=>{
+  currentQ++;
+  if(currentQ>=40)showResults();
+  else renderQuestion();
+});
+
+document.getElementById('retryBtn').addEventListener('click',()=>{
+  score=0;currentQ=0;
+  shuffled=shuffle(questions);
+  showScreen('quizScreen');
+  renderQuestion();
+});
+
+// Element SDK
+window.elementSdk.init({
+  defaultConfig,
+  onConfigChange:async(cfg)=>{
+    const t=cfg.exam_title||defaultConfig.exam_title;
+    document.getElementById('mainTitle').textContent=t;
+    const ff=cfg.font_family||defaultConfig.font_family;
+    const base=cfg.font_size||defaultConfig.font_size;
+    document.querySelectorAll('.font-heading').forEach(el=>{el.style.fontFamily=`${ff}, serif`});
+    document.getElementById('mainTitle').style.fontSize=`${base*2}px`;
+    document.getElementById('qText').style.fontSize=`${base*1.4}px`;
+    // colors
+    const bg=cfg.background_color||defaultConfig.background_color;
+    const accent=cfg.surface_color||defaultConfig.surface_color;
+    const txt=cfg.text_color||defaultConfig.text_color;
+    const primary=cfg.primary_action_color||defaultConfig.primary_action_color;
+    const secondary=cfg.secondary_action_color||defaultConfig.secondary_action_color;
+    document.getElementById('app').style.background=bg;
+    document.getElementById('qNumber').style.color=accent;
+    document.querySelectorAll('h1,h2,.font-heading').forEach(el=>el.style.color=txt);
+    document.getElementById('startBtn').style.background=primary;
+    document.getElementById('nextBtn').style.background=primary;
+    document.getElementById('progressBar').style.background=`linear-gradient(to right,${primary},${secondary})`;
+  },
+  mapToCapabilities:(cfg)=>({
+    recolorables:[
+      {get:()=>cfg.background_color||defaultConfig.background_color,set:v=>{cfg.background_color=v;window.elementSdk.setConfig({background_color:v})}},
+      {get:()=>cfg.surface_color||defaultConfig.surface_color,set:v=>{cfg.surface_color=v;window.elementSdk.setConfig({surface_color:v})}},
+      {get:()=>cfg.text_color||defaultConfig.text_color,set:v=>{cfg.text_color=v;window.elementSdk.setConfig({text_color:v})}},
+      {get:()=>cfg.primary_action_color||defaultConfig.primary_action_color,set:v=>{cfg.primary_action_color=v;window.elementSdk.setConfig({primary_action_color:v})}},
+      {get:()=>cfg.secondary_action_color||defaultConfig.secondary_action_color,set:v=>{cfg.secondary_action_color=v;window.elementSdk.setConfig({secondary_action_color:v})}}
+    ],
+    borderables:[],
+    fontEditable:{get:()=>cfg.font_family||defaultConfig.font_family,set:v=>{cfg.font_family=v;window.elementSdk.setConfig({font_family:v})}},
+    fontSizeable:{get:()=>cfg.font_size||defaultConfig.font_size,set:v=>{cfg.font_size=v;window.elementSdk.setConfig({font_size:v})}}
+  }),
+  mapToEditPanelValues:(cfg)=>new Map([
+    ["exam_title",cfg.exam_title||defaultConfig.exam_title],
+    ["passing_score_label",cfg.passing_score_label||defaultConfig.passing_score_label]
+  ])
+});
+
+lucide.createIcons();
+</script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9e87111001992117',t:'MTc3NTU0NDI5Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
